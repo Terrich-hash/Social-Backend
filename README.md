@@ -150,7 +150,7 @@ Bearer YOUR_TOKEN
 
 ---
 
-## 👨‍💻 Author
+##  Author
 
 Built by **Terrich**
 Backend Developer | FastAPI | Systems
