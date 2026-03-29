@@ -114,7 +114,7 @@ Once server is running:
 4. Enter:
 
 ```
-Bearer YOUR_TOKEN
+YOUR_TOKEN
 ```
 
 ---
