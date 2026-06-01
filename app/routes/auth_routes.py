@@ -27,7 +27,7 @@ def register(data: UserCreate, db: Session = Depends(get_db)):
     user = User(
         username=data.username,
         email=data.email,
-        password=bcrypt.hash(data.password[:72])
+        password=bcrypt.hash(data.password)
     )
 
     try:
