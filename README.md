@@ -1,48 +1,93 @@
 # Social Media Backend (FastAPI)
 
-A scalable and modular backend for a social media platform built using FastAPI.
-This project implements authentication, post management, social interactions, and a structured API architecture.
+A production-ready social media backend built with FastAPI, PostgreSQL, SQLAlchemy, and JWT authentication.
+
+This project demonstrates modern backend engineering practices including authentication, authorization, database relationships, social interactions, rate limiting, Docker containerization, and cloud deployment readiness.
 
 ---
 
-##  Features
+## Features
 
-*  JWT Authentication (Login / Register)
-*  User Management
-*  Create Posts (with image URLs)
-*  Like System (with duplicate prevention)
-*  Comment System
-*  Follow / Unfollow Users
-*  Notification System (basic)
-*  Rate Limiting (optional)
-*  API Documentation (Swagger UI)
+### Authentication & Security
+
+* JWT Authentication
+* User Registration
+* User Login
+* Password Hashing with bcrypt
+* Protected Routes
+* Environment Variable Configuration
+
+### Social Features
+
+* Create Posts
+* Like Posts
+* Comment on Posts
+* Follow Users
+* Notification System
+* User Feed
+
+### Backend Features
+
+* FastAPI REST API
+* PostgreSQL Database
+* SQLAlchemy ORM
+* Pydantic Validation
+* Rate Limiting
+* Docker Support
+* Cloud Deployment Ready
+* Swagger Documentation
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
-* **Backend Framework:** FastAPI
-* **Database:** MySQL
-* **ORM:** SQLAlchemy
-* **Validation:** Pydantic
-* **Authentication:** JWT (python-jose)
-* **Password Hashing:** Passlib (bcrypt)
+### Backend
+
+* FastAPI
+* Python 3.11+
+
+### Database
+
+* PostgreSQL (Neon)
+* SQLAlchemy ORM
+
+### Authentication
+
+* JWT (python-jose)
+* Passlib + bcrypt
+
+### Deployment
+
+* Docker
+* Docker Compose
+* Render
+* Neon PostgreSQL
 
 ---
 
-##  Project Structure
+## Project Structure
 
-```
+```text
 social-backend/
 │
 ├── app/
-│   ├── core/           # security, config, middleware
-│   ├── routes/         # API routes
-│   ├── models.py       # database models
-│   ├── schemas.py      # request/response validation
-│   ├── db.py           # database connection
-│   └── main.py         # app entry point
+│   ├── core/
+│   │   ├── security.py
+│   │   ├── exceptions.py
+│   │   └── rate_limiter.py
+│   │
+│   ├── routes/
+│   │   ├── auth_routes.py
+│   │   ├── post_routes.py
+│   │   └── social_routes.py
+│   │
+│   ├── db.py
+│   ├── models.py
+│   ├── schemas.py
+│   └── main.py
 │
+├── Dockerfile
+├── docker-compose.yml
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
@@ -51,46 +96,88 @@ social-backend/
 
 ---
 
-##  Setup Instructions
+## Database Models
 
-### 1️. Clone Repository
+### User
+
+* id
+* username
+* email
+* password
+* created_at
+
+### Post
+
+* id
+* user_id
+* image_url
+* caption
+* created_at
+
+### Like
+
+* id
+* user_id
+* post_id
+
+### Comment
+
+* id
+* user_id
+* post_id
+* content
+
+### Follow
+
+* follower_id
+* following_id
+
+### Notification
+
+* id
+* user_id
+* message
+* is_read
+
+---
+
+## Environment Variables
+
+Create a `.env` file:
+
+```env
+SECRET_KEY=your_secret_key_here
+
+DATABASE_URL=postgresql://username:password@host/database?sslmode=require
+```
+
+---
+
+## Local Setup
+
+### Clone Repository
 
 ```bash
-git clone https://github.com/Terrich-hash/Social-Backend.git
+git clone git@github.com:Terrich-hash/Social-Backend.git
+
 cd Social-Backend
 ```
 
----
-
-### 2️. Create Virtual Environment
+### Create Virtual Environment
 
 ```bash
 python -m venv venv
-source venv/bin/activate   # Mac/Linux
+
+source venv/bin/activate
 ```
 
----
-
-### 3️. Install Dependencies
+### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
-
-### 4️. Setup Environment Variables
-
-Create `.env` file:
-
-```env
-SECRET_KEY=your_secret_key
-DATABASE_URL=mysql+pymysql://username:password@localhost:3306/social_db
-```
-
----
-
-### 5️. Run Server
+### Run Application
 
 ```bash
 python -m uvicorn app.main:app --reload
@@ -98,65 +185,145 @@ python -m uvicorn app.main:app --reload
 
 ---
 
-## 📌 API Documentation
+## Docker Setup
 
-Once server is running:
+### Build & Run
 
-👉 http://127.0.0.1:8000/docs
-
----
-
-## 🔑 Authentication Flow
-
-1. Register user
-2. Login → get JWT token
-3. Click **Authorize 🔒** in Swagger
-4. Enter:
-
+```bash
+docker compose up --build
 ```
-YOUR_TOKEN
+
+### Stop Containers
+
+```bash
+docker compose down
 ```
 
 ---
 
-## 📡 Sample Endpoints
+## API Documentation
 
-| Method | Endpoint           | Description   |
-| ------ | ------------------ | ------------- |
-| POST   | /auth/register     | Register user |
-| POST   | /auth/login        | Login         |
-| POST   | /posts/            | Create post   |
-| POST   | /like/{post_id}    | Like post     |
-| POST   | /comment/{post_id} | Comment       |
-| POST   | /follow/{user_id}  | Follow user   |
+After starting the server:
 
----
+```text
+http://localhost:8000/docs
+```
 
-## ⚠️ Important Notes
-
-* `.env` is ignored for security
-* Passwords are hashed using bcrypt
-* MySQL requires string lengths (handled in models)
+Swagger UI provides interactive API testing.
 
 ---
 
-## 🚀 Future Improvements
+## Authentication Flow
 
-* Feed algorithm (posts from followed users)
-* Notifications system enhancement
-* Image upload integration (Cloudinary)
-* Pagination & optimization
-* Deployment (Docker + Cloud)
+### Register
+
+```http
+POST /auth/register
+```
+
+### Login
+
+```http
+POST /auth/login
+```
+
+Response:
+
+```json
+{
+  "access_token": "your_jwt_token"
+}
+```
+
+### Authorize
+
+Click the **Authorize** button in Swagger UI and paste:
+
+```text
+Bearer YOUR_JWT_TOKEN
+```
 
 ---
 
-##  Author
+## API Endpoints
 
-Built by **Terrich**
-Backend Developer | FastAPI | Systems
+### Auth
+
+| Method | Endpoint       |
+| ------ | -------------- |
+| POST   | /auth/register |
+| POST   | /auth/login    |
+
+### Posts
+
+| Method | Endpoint    |
+| ------ | ----------- |
+| POST   | /posts      |
+| GET    | /posts/feed |
+
+### Social
+
+| Method | Endpoint                  |
+| ------ | ------------------------- |
+| POST   | /social/like/{post_id}    |
+| POST   | /social/comment/{post_id} |
+| POST   | /social/follow/{user_id}  |
 
 ---
 
-##  If you found this useful
+## Deployment
 
-Give it a ⭐ on GitHub!
+### Backend
+
+* Render
+
+### Database
+
+* Neon PostgreSQL
+
+### Build Command
+
+```bash
+pip install -r requirements.txt
+```
+
+### Start Command
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+---
+
+## Future Improvements
+
+* Feed Ranking Algorithm
+* User Profiles
+* Search Functionality
+* Redis Caching
+* Alembic Migrations
+* CI/CD Pipeline
+* WebSocket Notifications
+* Unit & Integration Tests
+
+---
+
+## Author
+
+**Terrich**
+
+Backend Engineer | FastAPI | PostgreSQL | Docker | Linux
+
+GitHub:
+https://github.com/Terrich-hash
+
+---
+
+## License
+
+MIT License
+
+---
+
+If you found this project useful, consider giving it a ⭐ on GitHub.
+
